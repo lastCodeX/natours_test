@@ -12,7 +12,6 @@ class APIFeatures {
     this.queryString = JSON.stringify(queryObj)
     this.queryString = this.queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
     this.query.find(JSON.parse(this.queryString))
-    console.log(1)
     return this
   }
   sort() {
@@ -22,7 +21,6 @@ class APIFeatures {
     } else {
       this.query = this.query.sort('-createdAt')
     }
-    console.log(2)
     return this
   }
   limitFields() {
@@ -32,7 +30,6 @@ class APIFeatures {
     } else {
       this.query = this.query.select('-__v')
     }
-    console.log(3)
     return this
   }
   paginate() {
@@ -41,7 +38,6 @@ class APIFeatures {
     const skip = (page - 1) * limit
 
     this.query = this.query.skip(skip).limit(limit)
-    console.log(4)
     return this
   }
 }
