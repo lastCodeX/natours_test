@@ -1,0 +1,175 @@
+openapi: '3.0.2'
+info:
+  title: natours_api
+  version: '1.0'
+servers:
+  - url: http://127.0.0.1/api/v1
+paths:
+  /tours:
+    get:
+      parameters:
+        - name: sort
+          in: query
+          description: Сортировка по выбраному полю
+          schema:
+            type: string
+          example: '?sort=price'
+        - name: limitFields
+          in: query
+          description: Отображение выбраных полей
+          schema:
+            type: string
+          example: '?fields=name,price,rating'
+        - name: page
+          in: query
+          description: Отображение выбранной страницы
+          schema:
+            type: string
+          example: '?page=2'
+        - name: limit
+          in: query
+          description: Колличество элементов на странице
+          schema:
+            type: string
+          example: '?limit=10'
+      responses:
+        '200':
+          description: Получить все туры
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours200'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours500'
+    post:
+      summary: Добавить тур
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/tours_schema.yml#/components/schemas/reqBody'
+            example: {
+              "name": "The Forest Hiker",
+              "duration": 5,
+              "maxGroupSize": 25,
+              "difficulty": "easy",
+              "price": 397,
+              "summary": "Breathtaking hike through the Canadian Banff National Park",
+              "imageCover": "tour-1-cover.jpg",
+            }
+      responses:
+        '201':
+          description: Получение нового тура
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours201'
+        '400':
+          description: Некорректные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours400'
+  /tours/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          example: 6027dbc98cbd7e2314fbbd94
+      responses:
+        '200':
+          description: Получить тур с указанным id
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours201'
+        '400':
+          description: Элемент с таким id не найден
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours400' 
+    patch:
+      summary: Изменить тур
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: tours/6027dbc98cbd7e2314fbbd94
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/tours_schema.yml#/components/schemas/reqBody'
+            example: {
+              "name": "The Forest Hiker",
+              "duration": 5,
+              "maxGroupSize": 25,
+              "difficulty": "easy",
+              "price": 397,
+              "summary": "Breathtaking hike through the Canadian Banff National Park",
+              "imageCover": "tour-1-cover.jpg",
+            }
+      responses:
+        '201':
+          description: Тур изменен
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours201'
+        '400':
+          description: Некорректные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours400' 
+    delete:
+      summary: Удалить тур
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: tours/6027dbc98cbd7e2314fbbd94       
+      responses:
+        '204':
+          description: Тур удален
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          description: Некорректные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours400'
+  /tour-stats:
+    get:
+      responses:
+        '200':
+          description: Сортировка по полю "difficulty"
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/ToursStats'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/tours_schema.yml#/components/schemas/Tours500'
+                    
