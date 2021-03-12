@@ -1,4 +1,5 @@
 const APIFeatures = require('./../utils/apiFeatures')
+const catchAsync = require('./../utils/catchAsync')
 const Tour = require('./../model/tourModel')
 const fs = require('fs')
 
@@ -24,10 +25,8 @@ const fs = require('fs')
 //   next()
 // }
 
-exports.getAllTours = async (req,res,next) => {
-
-  try {
-    const features = new APIFeatures(Tour.find(), req.query)
+exports.getAllTours = catchAsync(async (req,res,next) => {
+  const features = new APIFeatures(Tour.find(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -40,19 +39,11 @@ exports.getAllTours = async (req,res,next) => {
         tours
       } 
     })
-  } catch (error) {
-    res.status(500).json({
-      status: 'failed',
-      message: error
-    })
-  }
-  next()
-}
+})
 
-exports.getTour = async (req, res) => {
+exports.getTour = catchAsync(async (req, res, next) => {
 // const id = req.params.id * 1
 // const tour = tours.find(el => el.id === id)
-try {
   const tour = await Tour.findById(req.params.id)
   res.status(201).json({
     status: 'success',
@@ -60,99 +51,65 @@ try {
       tour
     }
   })
-} catch (error) {
-  res.status(400).json({
-    status: 'failed',
-    message: error
-  })
-}
+})
 
 
 
-}
 
-exports.createTour = async (req, res) => {
+
+exports.createTour = catchAsync(async (req, res, next) => {
 // const newId = tours[tours.length - 1].id + 1
 // const newTour = Object.assign({id: newId}, req.body)
 // tours.push(newTour)
 // fs.writeFile(`${__dirname}/../dev_data/data/tours_simples.json`, JSON.stringify(tours), err => {
-  try {
-    const newTour = await Tour.create(req.body)
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour
-      }
-    })
-  } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      message: error
-    })
-  }
-}
+  const newTour = await Tour.create(req.body)
+  res.status(201).json({
+    status: 'success',
+    data: {
+      tour: newTour
+    }
+  })
+})
 
-exports.updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    })
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour
-      }
-    })
-  } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      message: error
-    })
-  }
+exports.updateTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  })
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour
+    }
+  })
+})
 
-}
-
-exports.deleteTour = async (req, res) => {
-  try {
+exports.deleteTour = catchAsync(async (req, res, next) => {
     await Tour.findByIdAndDelete(req.params.id)
     res.status(204).json({
       data: null
       })
-  } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      message: error
-    })
-  }
-}
+})
 
-exports.getTourStats = async (req, res) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: {ratingAverage: {$gte: 4.5}}
-      },
-      {
-        $group: {
-          _id: '$difficulty',
-          avgRating: {$avg: '$ratingAverage'},
-          avgPrice: {$avg: '$price'},
-          minPrice: {$min: '$price'},
-          maxPrice: {$max: '$price'}
-        }
+exports.getTourStats = catchAsync(async (req, res, next) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: {ratingAverage: {$gte: 4.5}}
+    },
+    {
+      $group: {
+        _id: '$difficulty',
+        avgRating: {$avg: '$ratingAverage'},
+        avgPrice: {$avg: '$price'},
+        minPrice: {$min: '$price'},
+        maxPrice: {$max: '$price'}
       }
-    ])
-    res.status(200).json({
-      status: 'success',
-      data: {
-        stats
-      }
-    })
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error
-    })
-  }
-}
+    }
+  ])
+  res.status(200).json({
+    status: 'success',
+    data: {
+      stats
+    }
+  })
+})
