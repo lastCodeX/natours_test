@@ -3,6 +3,12 @@ const mongoose = require('mongoose')
 dotenv.config({path: './config.env'})
 const app = require('./app')
 
+process.on('uncaughtRejection', err => {
+  console.log(err.name, err.message)
+  console.log('UNCAUGHT REJECTION! Shuting down...')
+    process.exit(1)
+})
+
 const port = process.env.PORT || 3000
 const DB = process.env.DATABASE_LOCAL
 
@@ -26,3 +32,4 @@ process.on('unhandledRejection', err => {
     process.exit(1)
   })
 })
+
